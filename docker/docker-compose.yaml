@@ -1,0 +1,26 @@
+services:
+  web:
+    image: python:3.8
+    container_name: flask_app
+    command: bash -c "pip install -r requirements.txt && flask run --host=0.0.0.0"
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    environment:
+      FLASK_ENV: development
+
+  locust:
+    image: locustio/locust
+    container_name: locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - .:/mnt/locust
+    working_dir: /mnt/locust
+    command: locust -f locustfile.py --host=http://web:5000
+
+networks:
+  default:
+    driver: bridge
